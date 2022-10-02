@@ -17,7 +17,22 @@ async function postCustomer(req, res) {
   }
 }
 
-async function putCustomer(req, res) {}
+async function putCustomer(req, res) {
+    const { name: name, phone: phone, cpf: cpf, birthday: birthday } = req.body;
+    const { id: id } = req.params
+
+  try {
+    await connection
+      .query(
+        `UPDATE customers SET name=$1, phone=$2, cpf=$3, birthday=$4 WHERE id=$5;`,[name, phone, cpf, birthday, id]
+      )
+      .then((result) => {
+        return res.sendStatus(201);
+      });
+  } catch (error) {
+    return res.status(500).send(error.message);
+  }
+}
 
 async function getCustomers(req, res) {
   const { cpf: cpf } = req.query;
@@ -26,7 +41,6 @@ async function getCustomers(req, res) {
       await connection.query(`SELECT * FROM customers;`).then((result) => {
         const customers = result.rows.map((item) => {
           Object.keys(item).map((key) => {
-            console.log(item);
             if (key === "birthday") {
               item[key] = item[key].toISOString().substring(0, 10);
             }
@@ -51,7 +65,17 @@ async function getCustomerById(req, res) {
     const { id: id } = req.params
 
     try {
-        await connection.query(`SELECT * FROM customers WHERE id=$1`, [id]).then(result => {return res.send(result.rows)})
+        await connection.query(`SELECT * FROM customers WHERE id=$1`, [id]).then((result) => {
+            const customers = result.rows.map((item) => {
+              Object.keys(item).map((key) => {
+                if (key === "birthday") {
+                  item[key] = item[key].toISOString().substring(0, 10);
+                }
+              });
+              return item;
+            });
+            return res.send(customers);
+          });
     } catch (error) {
         return res.status(500).send(error.message);
     }

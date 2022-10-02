@@ -6,7 +6,7 @@ import { postCustomer, getCustomers, putCustomer, getCustomerById } from '../con
 const customersRouter = express.Router();
 
 customersRouter.post('/customers', newDataCustomerValidation, postCustomer);
-customersRouter.put('/customers', newDataCustomerValidation, putCustomer);
+customersRouter.put('/customers/:id', customerIdValidation, newDataCustomerValidation, putCustomer);
 customersRouter.get('/customers', getCustomers);
 customersRouter.get('/customers/:id', customerIdValidation, getCustomerById);
 
