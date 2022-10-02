@@ -24,10 +24,19 @@ async function postGame(req, res) {
 }
 
 async function getGames(req, res) {
+  const { name: name } = req.query;
+
   try {
-    await connection.query(`SELECT * FROM games;`).then((result) => {
-      return res.send(result.rows);
-    });
+    if(name === undefined){
+        await connection.query(`SELECT * FROM games;`).then((result) => {
+            return res.send(result.rows);
+          });
+    } else {
+        await connection.query(`SELECT * FROM games WHERE LOWER(name) LIKE LOWER($1);`, [`${name}%`]).then((result) => {
+            return res.send(result.rows);
+          });
+    }
+    
   } catch (error) {
     return res.status(500).send(error.message);
   }
