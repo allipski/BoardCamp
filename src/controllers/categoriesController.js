@@ -9,4 +9,12 @@ async function postCategory(req, res) {
     }
 }
 
-export { postCategory };
+async function getCategories(req, res) {
+    try {
+        await connection.query(`SELECT * FROM categories;`).then(result => {return res.send(result.rows)});
+    } catch (error) {
+        return res.status(500).send(error.message);
+    }
+}
+
+export { postCategory, getCategories };
