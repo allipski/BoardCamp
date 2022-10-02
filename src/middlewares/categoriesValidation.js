@@ -8,7 +8,6 @@ if (name === '' || name === undefined || name === null) {
 }
 
 const existName = await connection.query(`SELECT * FROM categories WHERE name=$1;`, [name]);
-console.log(existName.rows[0])
 
 if (existName.rows[0] !== undefined) {
     return res.sendStatus(409);
