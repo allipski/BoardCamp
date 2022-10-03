@@ -18,13 +18,14 @@ async function postCustomer(req, res) {
 }
 
 async function putCustomer(req, res) {
-    const { name: name, phone: phone, cpf: cpf, birthday: birthday } = req.body;
-    const { id: id } = req.params
+  const { name: name, phone: phone, cpf: cpf, birthday: birthday } = req.body;
+  const { id: id } = req.params;
 
   try {
     await connection
       .query(
-        `UPDATE customers SET name=$1, phone=$2, cpf=$3, birthday=$4 WHERE id=$5;`,[name, phone, cpf, birthday, id]
+        `UPDATE customers SET name=$1, phone=$2, cpf=$3, birthday=$4 WHERE id=$5;`,
+        [name, phone, cpf, birthday, id]
       )
       .then((result) => {
         return res.sendStatus(201);
@@ -62,24 +63,25 @@ async function getCustomers(req, res) {
 }
 
 async function getCustomerById(req, res) {
-    const { id: id } = req.params
+  const { id: id } = req.params;
 
-    try {
-        await connection.query(`SELECT * FROM customers WHERE id=$1`, [id]).then((result) => {
-            const customers = result.rows.map((item) => {
-              Object.keys(item).map((key) => {
-                if (key === "birthday") {
-                  item[key] = item[key].toISOString().substring(0, 10);
-                }
-              });
-              return item;
-            });
-            return res.send(customers);
+  try {
+    await connection
+      .query(`SELECT * FROM customers WHERE id=$1`, [id])
+      .then((result) => {
+        const customers = result.rows.map((item) => {
+          Object.keys(item).map((key) => {
+            if (key === "birthday") {
+              item[key] = item[key].toISOString().substring(0, 10);
+            }
           });
-    } catch (error) {
-        return res.status(500).send(error.message);
-    }
-
+          return item;
+        });
+        return res.send(customers);
+      });
+  } catch (error) {
+    return res.status(500).send(error.message);
+  }
 }
 
 export { postCustomer, putCustomer, getCustomers, getCustomerById };
